@@ -1,0 +1,23 @@
+{
+  "name": "iot_course_project_2024.1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "iot_course_project"
+  },
+  "author": "Khang, Khanh, Kien, Tam",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mongoose": "^5.13.22",
+    "nodemon": "^3.1.7",
+    "prettier": "^3.3.3"
+  }
+}
