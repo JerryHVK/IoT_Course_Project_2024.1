@@ -14,10 +14,14 @@
   "author": "Khang, Khanh, Kien, Tam",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "mongoose": "^5.13.22",
+    "morgan": "^1.10.0",
+    "mqtt": "^5.10.3",
     "nodemon": "^3.1.7",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "validator": "^13.12.0"
   }
 }

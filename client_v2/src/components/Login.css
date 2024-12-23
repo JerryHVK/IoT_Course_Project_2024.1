@@ -1,0 +1,81 @@
+/* Container styling */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f5f5f5; /* Light gray background */
+}
+
+/* Card styling */
+.login-card {
+  width: 400px;
+  background-color: #ffffff; /* White background */
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Image styling */
+.login-image img {
+  width: 100px;
+  margin-bottom: 0px;
+  border-radius: 0%;
+}
+
+/* Title styling */
+.login-title {
+  font-size: 24px;
+  font-weight: bold;
+  
+}
+
+/* Input styling */
+.login-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Button container styling */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+/* Button styling */
+.login-button {
+  width: 48%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Primary button styling */
+.login-button.primary {
+  background-color: #004085; /* Dark blue */
+  color: #ffffff;
+}
+
+.login-button.primary:hover {
+  background-color: #003366; /* Darker blue */
+}
+
+/* Secondary button styling */
+.login-button.secondary {
+  background-color: #6f42c1; /* Purple */
+  color: #ffffff;
+}
+
+.login-button.secondary:hover {
+  background-color: #5a379d; /* Darker purple */
+}

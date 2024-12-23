@@ -3,6 +3,7 @@ const dotenv = require('dotenv'); // to get the environment variable
 dotenv.config({ path: './config.env' });
 
 const app = require('./app');
+const mqttClient = require('./services/mqttService');
 
 mongoose
   .connect(process.env.DATABASE_LOCAL, {
