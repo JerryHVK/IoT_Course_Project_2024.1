@@ -20,8 +20,16 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(authController.protect, authController.restrictTo('admin'), deviceController.getAllDevices)
-  .post(authController.protect, authController.restrictTo('admin'), deviceController.addDevice);
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    deviceController.getAllDevices,
+  )
+  .post(
+    authController.protect,
+    authController.restrictTo('admin'),
+    deviceController.addDevice,
+  );
 
 router.post(
   '/login',
@@ -30,21 +38,23 @@ router.post(
   deviceController.loginDevice,
 );
 
-router.post(
+router.get(
   '/logout',
   authController.protect,
   authController.restrictTo('user'),
   deviceController.logoutDevice,
 );
 
-router
-  .route('/:id')
-  .get(deviceController.getDevice)
-  // .patch(deviceController.updateDevice)
-  // .delete(
-  //   authController.protect,
-  //   authController.restrictTo('admin'),
-  //   deviceController.deleteDevice,
-  // );
+router.get('/mydevice', authController.protect, deviceController.getDevice);
+
+// router
+//   .route('/:id')
+//   .get(deviceController.getDevice)
+// .patch(deviceController.updateDevice)
+// .delete(
+//   authController.protect,
+//   authController.restrictTo('admin'),
+//   deviceController.deleteDevice,
+// );
 
 module.exports = router;

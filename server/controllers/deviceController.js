@@ -1,5 +1,6 @@
 const Device = require('../models/deviceModel');
 const catchAsync = require('../utils/catchAsync');
+const AppError = require('./../utils/appError');
 
 // USER PERMISSION
 
@@ -65,51 +66,14 @@ exports.logoutDevice = catchAsync(async (req, res, next) => {
   });
 });
 
-// ADMIN PERMISSION
-
-// Get All Devices
-exports.getAllDevices = catchAsync(async (req, res, next) => {
-  // we need at least paging for this API
-  // so the data need to send back to client is not too much
-  const devices = await Device.find().populate('user');
-
-  res.status(200).json()({
-    status: 'success',
-    results: devices.length,
-    data: {
-      devices,
-    },
-  });
-});
-
-// Add Device
-exports.addDevice = async (req, res) => {
-  try {
-    await Device.create(req.body);
-
-    res.status(200).json({
-      status: 'success',
-    });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
-
-// Update Device
-
-// Delete Device
-
-// USER and ADMIN PERMISSION
 
 // Get Device
 exports.getDevice = catchAsync(async (req, res, next) => {
   const device = await Device.findOne({ user: req.user._id });
+  console.log(req.user._id);
   if (!device) {
     return next(
-      new AppError('You do not have permission to perform this action', 403),
+      new AppError('There is no device belonging to you', 404),
     );
   }
 
@@ -120,3 +84,37 @@ exports.getDevice = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+
+// ADMIN PERMISSION
+
+// Get All Devices
+exports.getAllDevices = catchAsync(async (req, res, next) => {
+  // we need at least paging for this API
+  // so the data need to send back to client is not too much
+  const devices = await Device.find().populate('user');
+
+  res.status(200).json({
+    status: 'success',
+    results: devices.length,
+    data: {
+      devices,
+    },
+  });
+});
+
+// Add Device
+exports.addDevice = catchAsync(async (req, res) => {
+  await Device.create(req.body);
+
+  res.status(200).json({
+    status: 'success',
+  });
+});
+
+// Update Device
+
+// Delete Device
+
+// USER and ADMIN PERMISSION
+

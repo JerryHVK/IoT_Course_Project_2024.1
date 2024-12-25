@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 const deviceController = require('./../controllers/deviceController');
 
-const mqttServer = 'broker.emqx.io';
+const mqttServer = 'broker.emqx.io:1883';
 const mqttClientId = 'khang-khanh-kien-tam';
 const mqttUsername = 'group3-api-server';
 const mqttPassword = 'khangkhanhkientam';

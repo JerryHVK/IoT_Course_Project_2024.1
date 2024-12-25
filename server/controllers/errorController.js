@@ -1,111 +1,77 @@
-const { promisify } = require('util');
-const jwt = require('jsonwebtoken');
-const catchAsync = require('../utils/catchAsync');
-const User = require('./../models/userModel');
-const AppError = require('../utils/appError');
+const AppError = require('./../utils/appError');
 
-const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+const handleCastErrorDB = (err) => {
+  const message = `Invalid ${err.path}: ${err.value}.`;
+  return new AppError(message, 400);
+};
+
+const handleDuplicateFieldsDB = (err) => {
+  const value = err.errmsg.match(/"(.*?)"/)[0];
+  const message = `Duplicate field value: ${value}. Please use another value!`;
+  return new AppError(message, 400);
+};
+
+const handleValidationErrorDB = (err) => {
+  const errors = Object.values(err.errors).map((el) => el.message);
+  const message = `Invalid input data. ${errors.join('. ')}`;
+  return new AppError(message, 400);
+};
+
+const handleJsonWebTokenError = () =>
+  new AppError('Invalid token. Please login again!', 401); // 401 - unauthorization
+const handleJWTExpiredError = () =>
+  new AppError('Your token has expired! Please login again!', 401); // 401 - unauthorization
+
+const sendErrorDev = (err, res) => {
+  res.status(err.statusCode).json({
+    status: err.status,
+    error: err,
+    message: err.message,
+    stack: err.stack,
   });
 };
 
-exports.signup = catchAsync(async (req, res, next) => {
-  // const newUser = await User.create(req.body);
-  const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-    passwordChangedAt: req.body.passwordChangedAt,
-    role: req.body.role,
-  });
-
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
-});
-
-exports.login = catchAsync(async (req, res, next) => {
-  const { email, password } = req.body;
-  // 1) Check if email and password exist
-  if (!email || !password) {
-    return next(new AppError('Please provide email and password!', 400));
+const sendErrorProd = (err, res) => {
+  // Operational, trustes error: send message to client
+  if (err.isOperational) {
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+    });
   }
+  // Programming or other unknown error: don't leak error details
+  else {
+    // 1) Log error
+    // console.error('ERROR !!!', err);
 
-  // 2) Check if user exists && password is correct
-  const user = await User.findOne({ email }).select('+password');
-
-  // if the user is undefined, the next condition will not run
-  // that will make sure there is no error
-  if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError('Incorrect email or password', 401));
+    // 2) Send generic message
+    res.status(500).json({
+      status: 'error',
+      message: 'Something went very wrong',
+    });
   }
+};
 
-  // 3) If everything ok, send token to client
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
-});
+module.exports = (err, req, res, next) => {
+  // console.log(err.stack);
 
-exports.protect = catchAsync(async (req, res, next) => {
-  // 1) Getting token and check of it's there (checking that it exists)
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    token = req.headers.authorization.split(' ')[1];
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log(err.name);
+    sendErrorDev(err, res);
+  } else if (process.env.NODE_ENV === 'production') {
+    // let error = { ...err };
+    // if (error.name === 'CastError') error = handleCastErrorDB(error);
+    let error = Object.create(err);
+
+    if (err.name === 'CastError') error = handleCastErrorDB(err);
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    if (err.name === 'ValidationError') error = handleValidationErrorDB(err);
+    if (err.name === 'JsonWebTokenError') error = handleJsonWebTokenError(err);
+    if (err.name === 'TokenExpiredError') error = handleJWTExpiredError(err);
+
+    sendErrorProd(error, res);
   }
-
-  if (!token) {
-    return next(
-      new AppError('You are not logged in! Please log in to get access.', 401),
-    );
-    // 401 - unauthorized
-  }
-  // 2) Validate token
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-
-  // 3) Check if user still exists
-  const currentUser = await User.findById(decoded.id);
-  if (!currentUser) {
-    return next(
-      new AppError(
-        'The user belonging to this token does no longer exist.',
-        401,
-      ),
-    );
-  }
-
-  // 4) Check if user changed password after the token was issued
-  if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next(
-      new AppError('User recently changed password! Please login again.', 401),
-    );
-  }
-
-  // GRANT ACCESS TO PROTECTED ROUTE
-  req.user = currentUser;
-  next();
-});
-
-exports.restrictTo = (...roles) => {
-  return (req, res, next) => {
-    // roles is an array ['admin', 'lead-guide'], role='user'
-    if (!roles.includes(req.user.role)) {
-      return next(
-        new AppError('You do not have permission to perform this action', 403),
-      ); // 403 - forbidden
-    }
-    next();
-  };
 };
