@@ -1,4 +1,4 @@
-const Customer = require('../models/customerModel');
+const Customer = require('./customerModel');
 const Device = require('../models/deviceModel');
 
 // Signup
