@@ -12,7 +12,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [customerId, setCustomerId] = useState("");
 
-  const handleLogin = (customerId) => {
+  const handleLogin = (customerId) => { //user -> user/admin
     setIsLoggedIn(true);
     setCustomerId(customerId);
   };

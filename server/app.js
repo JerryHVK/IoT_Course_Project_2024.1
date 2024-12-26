@@ -9,6 +9,7 @@ const globalErrorHandle = require('./controllers/errorController');
 
 const deviceRouter = require('./routes/deviceRoutes');
 const userRouter = require('./routes/userRoutes');
+const healthIndexesRouter = require('./routes/healthIndexesRoutes');
 
 const cors = require('cors');
 
@@ -17,7 +18,7 @@ const app = express();
 // MIDDLEWARES
 
 // CORS để làm gì nhỉ? Nhớ search nha. Mình chỉ nhớ lúc đó mình cần nó nên mình thêm nó vào
-app.use(cors());  
+app.use(cors());
 
 // Mình cũng quên mất morgan để làm gì, cũng phải search, nhưng giờ thì làm cái sản phẩm chạy được đã
 if (process.env.NODE_ENV === 'development') {
@@ -43,7 +44,8 @@ app.use((req, res, next) => {
 // app.use('/api/v1/admin', adminRouter);
 
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/devices', deviceRouter)
+app.use('/api/v1/devices', deviceRouter);
+app.use('/api/v1/healthindexes', healthIndexesRouter);
 
 // Cái này là để xử lí những cái route không được xử lí
 // Ý là cũng dùng 127.0.0.1:3000 nhưng phần đuôi đằng sau nó không tồn tại ấy

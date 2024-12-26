@@ -66,15 +66,12 @@ exports.logoutDevice = catchAsync(async (req, res, next) => {
   });
 });
 
-
 // Get Device
 exports.getDevice = catchAsync(async (req, res, next) => {
   const device = await Device.findOne({ user: req.user._id });
   console.log(req.user._id);
   if (!device) {
-    return next(
-      new AppError('There is no device belonging to you', 404),
-    );
+    return next(new AppError('There is no device belonging to you', 404));
   }
 
   res.status(200).json({
@@ -84,7 +81,6 @@ exports.getDevice = catchAsync(async (req, res, next) => {
     },
   });
 });
-
 
 // ADMIN PERMISSION
 
@@ -117,4 +113,3 @@ exports.addDevice = catchAsync(async (req, res) => {
 // Delete Device
 
 // USER and ADMIN PERMISSION
-

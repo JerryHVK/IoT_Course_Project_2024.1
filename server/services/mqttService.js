@@ -28,6 +28,8 @@ client.on('message', (topic, message) => {
   // convert message to JSON format
   try {
     const messageJSON = message.toJSON();
+    messageJSON.data.heartRate  .spo2
+    save
 
   } catch (error) {
     console.log("Something's wrong when processing the mqtt message");
