@@ -19,6 +19,7 @@ mongoose
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
+    useUnifiedTopology: true          // Tam: this flag activate newer engine for server discovery and monitoring
   })
   .then(() => {
     console.log('DB connected successfully!');

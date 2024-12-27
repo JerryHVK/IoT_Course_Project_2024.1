@@ -1,0 +1,6 @@
+changes on server.js, db connection related:
+The older engine for server discovery and monitoring is less efficient and is being phased out. The useUnifiedTopology: true flag activates the newer engine, which:
+
+Improves connection monitoring.
+Reduces connection pool issues.
+Supports modern features like DNS SRV.
