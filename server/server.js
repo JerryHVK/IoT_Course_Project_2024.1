@@ -13,18 +13,8 @@ dotenv.config({ path: './config.env' });
 
 const app = require('./app');
 const mqttClient = require('./services/mqttService');
-
-mongoose
-  .connect(process.env.DATABASE_LOCAL, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true          // Tam: this flag activate newer engine for server discovery and monitoring
-  })
-  .then(() => {
-    console.log('DB connected successfully!');
-  });
-
+const dbConnect = require('./configs/dbConnect');
+dbConnect();
 const port = process.env.PORT;
 
 const server = app.listen(port, () => {

@@ -3,14 +3,9 @@ const jwt = require('jsonwebtoken');
 const catchAsync = require('../utils/catchAsync');
 const User = require('./../models/userModel');
 const AppError = require('../utils/appError');
+const { signToken } = require('../configs/jwtToken');
 
-const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-};
-
-exports.signup = catchAsync(async (req, res, next) => {
+const signup = catchAsync(async (req, res, next) => {
   // const newUser = await User.create(req.body);
   const newUser = await User.create({
     name: req.body.name,
@@ -32,23 +27,23 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.login = catchAsync(async (req, res, next) => {
+const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-  // 1) Check if email and password exist
+    // 1) Check if email and password exist
   if (!email || !password) {
     return next(new AppError('Please provide email and password!', 400));
   }
 
-  // 2) Check if user exists && password is correct
+    // 2) Check if user exists && password is correct
   const user = await User.findOne({ email }).select('+password');
 
-  // if the user is undefined, the next condition will not run
-  // that will make sure there is no error
+    // if the user is undefined, the next condition will not run
+    // that will make sure there is no error
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
   }
 
-  // 3) If everything ok, send token to client
+    // 3) If everything ok, send token to client
   const token = signToken(user._id);
   res.status(200).json({
     status: 'success',
@@ -56,7 +51,7 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.protect = catchAsync(async (req, res, next) => {
+const protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check of it's there (checking that it exists)
   let token;
   if (
@@ -98,7 +93,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.restrictTo = (...roles) => {
+const restrictTo = (...roles) => {
   return (req, res, next) => {
     // roles is an array ['admin', 'lead-guide'], role='user'
     if (!roles.includes(req.user.role)) {
@@ -109,3 +104,10 @@ exports.restrictTo = (...roles) => {
     next();
   };
 };
+
+module.exports = {
+  signup,
+  login,
+  protect,
+  restrictTo
+}
