@@ -1,24 +1,61 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import Layout from "./components/Layout";
+import Device from "./components/Device";
+import Home from "./components/Home";
+
+import "./App.css";
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [_id, setCustomerId] = useState("");
+
+  const handleLogin = (_id) => {
+    setIsLoggedIn(true);
+    setCustomerId(_id);
+  };
+
+  const [activeMenu, setActiveMenu] = useState("home");
+
+  const renderContent = () => {
+    switch (activeMenu) {
+      case "home":
+        return <Home />;
+      case "device":
+        return <Device customerId={_id} />;
+      case "logout":
+        setIsLoggedIn(false);
+        setCustomerId("");
+        console.log("CustomerID after logout: ", _id);
+        alert("Logout successfully!");
+        return;
+      default:
+        return <div>Welcome to the Home Page!</div>;
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="app">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              !isLoggedIn ? (
+                <Login onLogin={handleLogin} />
+              ) : (
+                <Layout activeMenu={activeMenu} onMenuClick={setActiveMenu}>
+                  {renderContent()}
+                </Layout>
+              )
+            }
+          />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
