@@ -2,6 +2,8 @@ import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
+const USER_LOGIN_API = `${process.env.REACT_APP_SERVER}${process.env.REACT_APP_USER_ROUTE}${process.env.REACT_APP_USER_LOGIN}`;
+
 function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -9,29 +11,28 @@ function Login({ onLogin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Add login logic here
+    // create requestOptions for login form
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     };
 
+    // make a request to the server to authenticate the user
     try {
       const response = await fetch(
-        "http://127.0.0.1:3001/api/v1/customers/login",
+        USER_LOGIN_API,
         requestOptions
       );
 
       if (response.ok) {
         // Await the response body to parse JSON
         const body = await response.json();
-        const customerId = body.data; // Adjust this based on your API response structure
-        console.log("customerId", customerId);
-        console.log(body);
+        const token = body.token; // Adjust this based on your API response structure
 
         // Call onLogin if it's provided
         if (onLogin) {
-          onLogin(customerId);
+          onLogin(token);
         }
       } else {
         // Handle login failure

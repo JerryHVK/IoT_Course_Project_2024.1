@@ -72,10 +72,11 @@
 
 /* Secondary button styling */
 .login-button.secondary {
-  background-color: #6f42c1; /* Purple */
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #4285F4;
 }
 
 .login-button.secondary:hover {
-  background-color: #5a379d; /* Darker purple */
+  background-color: #FFF8DC; /* Darker purple */
 }
+

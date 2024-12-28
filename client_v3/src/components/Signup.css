@@ -46,7 +46,7 @@
   font-size: 14px;
 }
 
-.signup-button {
+/* .signup-button {
   background-color: #004085;
   color: #fff;
   border: none;
@@ -58,4 +58,44 @@
 
 .signup-button:hover {
   background-color: #0056b3;
+} */
+
+/* Button container styling */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+
+/* Button styling */
+.signup-button {
+  width: 48%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Primary button styling */
+.signup-button.primary {
+  background-color: #004085; /* Dark blue */
+  color: #ffffff;
+}
+
+.signup-button.primary:hover {
+  background-color: #003366; /* Darker blue */
+}
+
+/* Secondary button styling */
+.signup-button.secondary {
+  background-color: #ffffff;
+  color: #4285F4;
+}
+
+.signup-button.secondary:hover {
+  background-color: #FFF8DC; /* Darker purple */
 }

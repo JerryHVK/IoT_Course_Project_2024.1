@@ -22,18 +22,18 @@ function Layout({ activeMenu, children, onMenuClick }) {
             <span>Home</span>
           </div>
           <div
-            className={`menu-item ${activeMenu === "camera" ? "active" : ""}`}
-            onClick={() => onMenuClick("camera")}
+            className={`menu-item ${activeMenu === "My Info" ? "active" : ""}`}
+            onClick={() => onMenuClick("my info")}
           >
-            <img src="/device-icon.png" alt="Device" className="menu-icon" />
-            <span>Device</span>
+            <img src="/camera-icon.png" alt="My Info" className="menu-icon" />
+            <span>My Info</span>
           </div>
           <div
-            className={`menu-item ${activeMenu === "info" ? "active" : ""}`}
-            onClick={() => onMenuClick("info")}
+            className={`menu-item ${activeMenu === "about system" ? "active" : ""}`}
+            onClick={() => onMenuClick("about system")}
           >
-            <img src="/info-icon.png" alt="My Info" className="menu-icon" />
-            <span>My Info</span>
+            <img src="/info-icon.png" alt="About System" className="menu-icon" />
+            <span>About System</span>
           </div>
           <div className="menu-item" onClick={() => onMenuClick("logout")}>
             <img src="/logout-icon.png" alt="Log out" className="menu-icon" />

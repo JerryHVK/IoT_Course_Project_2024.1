@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import "./Device.css";
+import "./Camera.css";
 import "reactjs-popup/dist/index";
+import CameraStream from './CameraStream';
 
 function Camera({ customerId }) {
   const [selectedCamera, setSelectedCamera] = useState(null);
@@ -10,7 +11,7 @@ function Camera({ customerId }) {
   const fetchListCamera = async () => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:3001/api/v1/customers/${customerId}/cam`
+        `${process.env.REACT_APP_SERVER_API}/customers/${customerId}/cam`
       );
       if (response.ok) {
         const body = await response.json();
@@ -69,7 +70,7 @@ function Camera({ customerId }) {
     // Example: Send form data to the server
     try {
       const response = await fetch(
-        `http://127.0.0.1:3001/api/v1/customers/${customerId}/cam`,
+        `${process.env.REACT_APP_SERVER_API}/customers/${customerId}/cam`,
         {
           method: "POST",
           headers: {
@@ -105,11 +106,12 @@ function Camera({ customerId }) {
 
       try {
         const response = await fetch(
-          `http://127.0.0.1:3001/api/v1/customers/${customerId}/cam`,
+          `${process.env.REACT_APP_SERVER_API}/customers/${customerId}/cam`,
           requestOptions
         );
         if (response.ok) {
           console.log("delete camera successfully");
+          fetchListCamera();
         } else {
           console.log("Cannot delete camera");
         }
@@ -168,7 +170,8 @@ function Camera({ customerId }) {
           {selectedCamera ? (
             <div>
               <h2>{selectedCamera.name}</h2>
-              <div className="camera-preview"></div>
+              {/* <div className="camera-preview"></div> */}
+              <CameraStream selectedCameraUrl = {selectedCamera.url}/>
               <p>URL: {selectedCamera.url}</p>
               <p>Location: {selectedCamera.location}</p>
               <p>ID: {selectedCamera._id}</p>
@@ -187,7 +190,7 @@ function Camera({ customerId }) {
               <button className="close-button" onClick={handleClosePopup}>
                 &times;
               </button>
-              <h2>Fill the Form</h2>
+              <h2>Camera Info</h2>
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
                   <label htmlFor="name">Name:</label>

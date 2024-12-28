@@ -2,13 +2,19 @@ import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Signup.css";
 
+const USER_SIGNUP_API = `${process.env.REACT_APP_SERVER}${process.env.REACT_APP_USER_ROUTE}${process.env.REACT_APP_USER_SIGNUP}`;
+
 function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [retypePassword, setRetypePassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
 
   const navigate = useNavigate();
+
+  const handleLogin = () => {
+    navigate("/");
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,9 +27,9 @@ function Signup() {
       return;
     }
 
-    // Check if retypePassword is correct
-    if (retypePassword !== password) {
-      element.textContent = "retype password and password are different";
+    // Check if passwordConfirm is correct
+    if (passwordConfirm !== password) {
+      element.textContent = "password and retype password are different";
       return;
     }
 
@@ -33,9 +39,9 @@ function Signup() {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, passwordConfirm }),
     };
-    fetch("http://127.0.0.1:3001/api/v1/customers/signup", requestOptions).then(
+    fetch(USER_SIGNUP_API, requestOptions).then(
       (response) => {
         if (response.ok) {
           alert("Signup successfully");
@@ -82,15 +88,27 @@ function Signup() {
             type="password"
             className="signup-input"
             placeholder="Retype your password"
-            onChange={(e) => setRetypePassword(e.target.value)}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
             required
           />
           <div>
             <p id="signup-error" style={{ color: "red" }}></p>
           </div>
-          <button type="submit" className="signup-button">
+          {/* <button type="submit" className="signup-button">
             Submit
-          </button>
+          </button> */}
+          <div className="button-container">
+            <button
+              type="button"
+              className="signup-button secondary"
+              onClick={handleLogin}
+            >
+              I already have an account
+            </button>
+            <button type="submit" className="signup-button primary">
+              Submit
+            </button>
+          </div>
         </form>
       </div>
     </div>
