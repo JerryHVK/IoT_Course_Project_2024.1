@@ -1,243 +1,164 @@
-import React, { useEffect, useState } from "react";
-import "./Camera.css";
-import "reactjs-popup/dist/index";
-import CameraStream from "./CameraStream";
-
-function Camera({ customerId }) {
-  const [selectedCamera, setSelectedCamera] = useState(null);
-  const [checkedCameras, setCheckedCameras] = useState([]);
-  const [listCamera, setListCamera] = useState(null);
-
-  const fetchListCamera = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_SERVER_API}/customers/${customerId}/cam`
-      );
-      if (response.ok) {
-        const body = await response.json();
-        setListCamera(body.data);
-      }
-    } catch (error) {
-      console.log("An error occurred during fetching the camera list");
-      setListCamera(null);
-    }
-  };
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import sensoricon from "../picture/sensor.jpg";
+const Device = ({ token }) => {
+  const [device, setDevice] = useState(null);
+  const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [newDeviceNumber, setNewDeviceNumber] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
-    fetchListCamera();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const fetchDevice = async () => {
+      if (!token) {
+        setError("No token provided. Please log in.");
+        return;
+      }
 
-  // Function to handle when we click an camera to show the video
-  const handleCameraClick = (camera) => {
-    setSelectedCamera(camera);
-  };
-
-  // Function to handle when we use check box
-  const handleCheckboxChange = (cameraId) => {
-    setCheckedCameras((prevChecked) =>
-      prevChecked.includes(cameraId)
-        ? prevChecked.filter((id) => id !== cameraId)
-        : [...prevChecked, cameraId]
-    );
-  };
-
-  // Handle the popup when we click the add camera button
-
-  const [isPopupVisible, setIsPopupVisible] = useState(false); // State to manage popup visibility
-  const [formData, setFormData] = useState({ name: "", url: "", location: "" }); // State to manage form data
-
-  const handleAddButton = () => {
-    setIsPopupVisible(true); // Show the popup when the add button is clicked
-  };
-
-  const handleClosePopup = () => {
-    setIsPopupVisible(false); // Hide the popup
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value, // Update the form data as the user types
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Form data submitted:", formData);
-
-    // Example: Send form data to the server
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_SERVER_API}/customers/${customerId}/cam`,
-        {
-          method: "POST",
+      try {
+        const response = await axios.get("http://localhost:3100/api/v1/devices/mydevice", {
           headers: {
-            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Use the token here
           },
-          body: JSON.stringify(formData),
+        });
+        setDevice(response.data.data.device);
+      } catch (err) {
+        if (err.response?.status === 404) {
+          // If no device exists, show the modal
+          setShowModal(true);
+        } else {
+          setError(err.response?.data?.message || "Failed to fetch device.");
+        }
+      }
+    };
+
+    fetchDevice();
+  }, [token]);
+
+  const handleAddDevice = async () => {
+    if (!newDeviceNumber || !password) {
+      alert("Please provide both device number and password.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3100/api/v1/devices/login",
+        { deviceNumber: newDeviceNumber, password },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-
-      if (response.ok) {
-        setIsPopupVisible(false); // Close the popup after successful submission
-
-        //re-fetch the data to have new camera list
-        fetchListCamera();
-      } else {
-        alert("Cannot add camera!");
-        console.error("Failed to submit the form");
-      }
-    } catch (error) {
-      console.error("An error occurred while submitting the form:", error);
+      setDevice(response.data.data.device);
+      setShowModal(false); // Close the modal after successful addition
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to add device.");
     }
   };
 
-  // Handle deleting camera
-  const handleDeleteButton = async (e) => {
-    e.preventDefault();
-    checkedCameras.map(async (cameraId) => {
-      const requestOptions = {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ _id: cameraId }),
-      };
+  if (error) {
+    return <div style={{ color: "red" }}>{error}</div>;
+  }
 
-      try {
-        const response = await fetch(
-          `${process.env.REACT_APP_SERVER_API}/customers/${customerId}/cam`,
-          requestOptions
-        );
-        if (response.ok) {
-          console.log("delete camera successfully");
-          fetchListCamera();
-        } else {
-          console.log("Cannot delete camera");
-        }
-      } catch (error) {
-        console.error("An error occurred during deleting camera:", error);
-      }
-    });
-    await fetchListCamera();
-  };
+  if (!device && !showModal) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
-      <div className="camera-section">
-        {/* Camera List */}
-        <div className="camera-list">
-          <div className="camera-list-header">
-            {checkedCameras.length > 0 && (
-              <button className="delete-button" onClick={handleDeleteButton}>
-                <img src="/delete-icon.png" alt="Delete" />
-              </button>
-            )}
-            <button className="add-button" onClick={handleAddButton}>
-              <img src="/add-icon.png" alt="Add" />
-            </button>
-          </div>
-          <div className="camera-list-body">
-            {listCamera &&
-              listCamera.map((camera) => (
-                <div
-                  key={camera._id}
-                  className={`camera-item ${
-                    selectedCamera?._id === camera._id ? "active" : ""
-                  }`}
-                  onClick={() => handleCameraClick(camera)}
-                >
-                  <div className="camera-info">
-                    <span className="camera-name">{camera.name}</span>
-                    <span className="camera-location">
-                      Location: {camera.location}
-                    </span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    className="camera-checkbox"
-                    checked={checkedCameras.includes(camera._id)}
-                    onChange={() => handleCheckboxChange(camera._id)}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </div>
-              ))}
-          </div>
-        </div>
+      <h1>My Device</h1>
+      {device ? (
+        <ul>
+          <li><strong>Device Number:</strong> {device.deviceNumber}</li>
+          <img src={sensoricon} alt="Device" style={{ width: "950px", height: "500px" }}/>
+          {/* Add more fields as needed */}
+        </ul>
+      ) : null}
 
-        {/* Camera Details Panel */}
-        <div className="camera-details">
-          {selectedCamera ? (
-            <div>
-              <h2>{selectedCamera.name}</h2>
-              {/* <div className="camera-preview"></div> */}
-              <CameraStream selectedCameraUrl={selectedCamera.url} />
-              <p>URL: {selectedCamera.url}</p>
-              <p>Location: {selectedCamera.location}</p>
-              <p>ID: {selectedCamera._id}</p>
-            </div>
-          ) : (
-            <p>Select a camera to view its details</p>
-          )}
-        </div>
-      </div>
-
-      <div>
-        {/* Popup */}
-        {isPopupVisible && (
-          <div className="popup-overlay">
-            <div className="popup">
-              <button className="close-button" onClick={handleClosePopup}>
-                &times;
+      {/* Modal for adding a device */}
+      {showModal && (
+        <div style={styles.modal}>
+          <div style={styles.modalContent}>
+            <h2>Add Device</h2>
+            <input
+              type="text"
+              placeholder="Enter device number"
+              value={newDeviceNumber}
+              onChange={(e) => setNewDeviceNumber(e.target.value)}
+              style={styles.input}
+            />
+            <input
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={styles.input}
+            />
+            <div style={styles.buttons}>
+              <button onClick={handleAddDevice} style={styles.addButton}>
+                Add Device
               </button>
-              <h2>Camera Info</h2>
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="name">Name:</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="Camera0"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="url">URL:</label>
-                  <input
-                    type="url"
-                    id="url"
-                    name="url"
-                    placeholder="rtsp://192.168.100.248"
-                    value={formData.url}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="location">Location:</label>
-                  <input
-                    type="text"
-                    id="location"
-                    name="location"
-                    placeholder="garden"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <button type="submit" className="submit-button">
-                  Submit
-                </button>
-              </form>
+              <button onClick={() => setShowModal(false)} style={styles.cancelButton}>
+                Cancel
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
-}
+};
 
-export default Camera;
+export default Device;
+
+const styles = {
+  modal: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: "20px",
+    borderRadius: "5px",
+    width: "300px",
+    textAlign: "center",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    margin: "10px 0",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+  },
+  buttons: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "10px",
+  },
+  addButton: {
+    backgroundColor: "#4CAF50",
+    color: "#fff",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
+  cancelButton: {
+    backgroundColor: "#f44336",
+    color: "#fff",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
+};
+

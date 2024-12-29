@@ -43,6 +43,17 @@ client.on('message', async (topic, message) => {
       { $push: { data: { heartRate: messageJSON.data.heartRate } } },
       { new: true, useFindAndModify: false },
     );
+    if (!result) {
+      //if result = null => no document -> create one
+      HealthIndexes.create({
+        user: device.user,
+      });
+      await HealthIndexes.findOneAndUpdate(
+        { user: device.user },
+        { $push: { data: { heartRate: messageJSON.data.heartRate } } },
+        { new: true, useFindAndModify: false },
+      );
+    }
     console.log(result);
   } catch (error) {
     console.log("Something's wrong in mqtt processing message");

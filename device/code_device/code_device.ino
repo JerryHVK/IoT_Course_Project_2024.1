@@ -4,8 +4,7 @@
 #include "heartRate.h"
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
-
-#define DEVICE_NUMBER "DEVICE5086"
+#include <esp_wifi.h>
 
 //  define the wifi and MQTT ip address
 const char* ssid = "Khang";
@@ -13,7 +12,8 @@ const char* password = "11111111";
 const char *mqtt_server = "broker.emqx.io";
 const int mqtt_port = 1883;
 const char *pub_topic = "iotcourse_group3/server";
-const int time_between_2_pubs = 15000; // (ms)
+const int time_between_2_pubs = 5000; // (ms)
+char mac_address[100];
 
 //  client for wifi connection
 WiFiClient espClient;
@@ -88,12 +88,14 @@ void loop() {
 
 //  this "setup_wifi()" function is the code example from "Wifi.h" library
 void setup_wifi() {
-  WiFi.mode(WIFI_OFF);
+  WiFi.mode(WIFI_STA);
   delay(1000);
   //This line hides the viewing of ESP as wifi hotspot
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.println("Connecting to WiFi");
+  readMacAddress();
+  Serial.println(mac_address);
   
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -139,7 +141,7 @@ void loop_for_data(){
 
     beatsPerMinute = 60 / (delta / 1000.0);
 
-    if (beatsPerMinute < 120 && beatsPerMinute > 40)
+    if (beatsPerMinute < 220 && beatsPerMinute > 27)
     {
       rates[rateSpot++] = (byte)beatsPerMinute; //Store this reading in the array
       rateSpot %= RATE_SIZE; //Wrap variable
@@ -172,10 +174,22 @@ void loop_for_data(){
 
 void send_data(){
   JsonDocument doc;
-  doc["deviceNumber"] = DEVICE_NUMBER;
+  doc["deviceNumber"] = mac_address;
   doc["data"]["heartRate"] = beatAvg;
   // doc["data"]["spo2"]
   char dataString[256];
   serializeJson(doc, dataString);
   client.publish(pub_topic, dataString);
+}
+
+void readMacAddress(){
+  uint8_t baseMac[6];
+  esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac);
+  if (ret == ESP_OK) {
+    sprintf(mac_address,"%02x:%02x:%02x:%02x:%02x:%02x",
+                  baseMac[0], baseMac[1], baseMac[2],
+                  baseMac[3], baseMac[4], baseMac[5]);
+  } else {
+    Serial.println("Failed to read MAC address");
+  }
 }

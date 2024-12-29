@@ -11,19 +11,17 @@ const mongoose = require('mongoose');
 //   // }
 // }, {timestamps: true});
 
-const dataSchema = new mongoose.Schema(
-  {
-    heartRate: {
-      type: Number,
-      required: true,
-    },
-    createdAt: {
-      type: Date,
-      required: true,
-      default: Date.now,
-    }
+const dataSchema = new mongoose.Schema({
+  heartRate: {
+    type: Number,
+    required: true,
   },
-);
+  createdAt: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
+});
 
 const healthIndexesSchema = new mongoose.Schema({
   user: {

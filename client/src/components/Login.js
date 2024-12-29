@@ -1,7 +1,7 @@
 import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
-
+import loginicon from "../picture/login.jpg";
 const USER_LOGIN_API = `${process.env.REACT_APP_SERVER}${process.env.REACT_APP_USER_ROUTE}${process.env.REACT_APP_USER_LOGIN}`;
 
 function Login({ onLogin }) {
@@ -59,7 +59,7 @@ function Login({ onLogin }) {
       <div className="login-card">
         <div className="login-image">
           <img
-            src="/web-logo.png" // Replace with your image URL
+            src={loginicon} // Replace with your image URL
             alt="Logo"
           />
         </div>

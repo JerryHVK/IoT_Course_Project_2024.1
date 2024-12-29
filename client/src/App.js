@@ -4,7 +4,7 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 
 import Layout from "./components/Layout";
-
+import Device from "./components/Device";
 import Home from "./components/Home";
 import MyInfo from "./components/MyInfo";
 import AboutSystem from "./components/AboutSystem";
@@ -45,6 +45,8 @@ function App() {
         return <MyInfo token={token} />;
       case "about system":
         return <AboutSystem />;
+      case "Device":
+        return <Device token={token} />;
       // case "logout":
       //   setIsLogoutConfirmOpen(true);
       //   return;
