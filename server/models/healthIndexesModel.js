@@ -5,16 +5,16 @@ const dataSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  spo2: {
-    type: Number,
-    require: true,
-  }
+  // spo2: {
+  //   type: Number,
+  //   require: true,
+  // }
 }, {timestamps: true});
 
 const healthIndexesSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'device',
+    ref: 'user',
     required: true,
     unique: true,
   },
