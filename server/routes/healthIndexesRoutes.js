@@ -19,9 +19,9 @@ router
 router
   .route('/fakedata')
   .patch(
-    authController.protect,
-    authController.restrictTo('user'),
-    healthIndexesController.createFakeData,
+    authController.protect, //authen
+    authController.restrictTo('user'), //author
+    healthIndexesController.createBetterFakeData, //end-point
   );
 router
   .route('/:number')

@@ -12,7 +12,7 @@ const dotenv = require('dotenv'); // to get the environment variable
 dotenv.config({ path: './config.env' });
 
 const app = require('./app');
-const mqttClient = require('./services/mqttService');
+
 
 mongoose
   .connect(process.env.DATABASE_LOCAL, {
@@ -29,6 +29,8 @@ const port = process.env.PORT;
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
+
+const mqttClient = require('./services/mqttService');
 
 
 // Mình cũng quên mất dòng này để làm gì rồi, xem lại video

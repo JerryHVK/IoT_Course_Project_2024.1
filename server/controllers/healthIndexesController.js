@@ -91,6 +91,54 @@ exports.createFakeData = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.createBetterFakeData = catchAsync(async (req, res, next) => {
+  const getRandomInt = (min, max) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
+  const generateRandomTime = (date) => {
+    const randomHour = getRandomInt(0, 23);
+    const randomMinute = getRandomInt(0, 59);
+    const randomSecond = getRandomInt(0, 59);
+    return new Date(date.setHours(randomHour, randomMinute, randomSecond));
+  };
+
+  const startDate = new Date('2024-01-01');
+  const endDate = new Date('2024-12-31');
+
+  const fakeData = [];
+
+  // Loop through each day of the year
+  for (
+    let currentDate = new Date(startDate);
+    currentDate <= endDate;
+    currentDate.setDate(currentDate.getDate() + 1)
+  ) {
+    const dailyData = Array.from({ length: 100 }, () => ({
+      heartRate: getRandomInt(48, 120), // Random heart rate value
+      createdAt: generateRandomTime(new Date(currentDate)), // Random time within the current day
+    }));
+
+    // Sort daily data by `createdAt` in ascending order
+    dailyData.sort((a, b) => a.createdAt - b.createdAt);
+
+    fakeData.push(...dailyData);
+  }
+
+  // Create a new HealthIndexes document
+  const newHealthIndexes = new HealthIndexes({
+    user: req.user._id,
+    data: fakeData,
+  });
+
+  // Save the document to the database
+  await newHealthIndexes.save();
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Yearly fake data created successfully in chronological order!',
+  });
+});
+
 exports.getHourlyAverageByDay = catchAsync(async (req, res, next) => {
   const { day, month, year } = req.query;
   // const { day, month, year } = req.params;
@@ -105,7 +153,7 @@ exports.getHourlyAverageByDay = catchAsync(async (req, res, next) => {
   }
 
   // Convert the day, month, year into a Date range
-  const startDate = new Date(Date.UTC(year, month-1, day, 0, 0, 0)); // Start of the day
+  const startDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0)); // Start of the day
   const endDate = new Date(Date.UTC(year, month - 1, day, 23, 59, 59)); // End of the day
   // console.log(startDate, endDate);
 
@@ -157,7 +205,6 @@ exports.getHourlyAverageByDay = catchAsync(async (req, res, next) => {
     data: results,
   });
 });
-
 
 exports.getDailyAverageByMonth = catchAsync(async (req, res, next) => {
   const { month, year } = req.query;

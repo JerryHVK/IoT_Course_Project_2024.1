@@ -1,15 +1,29 @@
 const mongoose = require('mongoose');
 
-const dataSchema = new mongoose.Schema({
-  heartRate: {
-    type: Number,
-    required: true,
+// const dataSchema = new mongoose.Schema({
+//   heartRate: {
+//     type: Number,
+//     required: true,
+//   },
+//   // spo2: {
+//   //   type: Number,
+//   //   require: true,
+//   // }
+// }, {timestamps: true});
+
+const dataSchema = new mongoose.Schema(
+  {
+    heartRate: {
+      type: Number,
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      required: true,
+      default: Date.now,
+    }
   },
-  // spo2: {
-  //   type: Number,
-  //   require: true,
-  // }
-}, {timestamps: true});
+);
 
 const healthIndexesSchema = new mongoose.Schema({
   user: {
