@@ -49,15 +49,26 @@ function MainContent() {
         analysis.
       </p>
       <h2>Web Application</h2>
-      <div>Requirement
+      <div><strong>Requirement</strong>
         <p>
           Users need to log in their account before using this app. If not then please create a new account and then log in 
         </p>
       </div>
-      <div>My info
+      <div> <strong>My Info</strong>
         <p>
-          This component will show the user latest heart rate data in the form of a line graph
+          This component will show the user name and their email
         </p>
+      </div>
+        <div> <strong>Home</strong>
+        <p>
+          This component will show the user latest heart rate depend on the day or month or year by a line graph: 
+        </p>
+        <ul>
+        <li>When user choose day, the line graph will show the heart rate through hours belong to the day</li>
+        <li>When user choose month, the line graph will show the heart rate through days belong to the month</li>
+        <li>When user choose year, the line graph will show the heart rate through months belong to the year</li>
+    
+        </ul>
       </div>
      
     </section>
@@ -68,7 +79,7 @@ function MainContent() {
 function Footer() {
   return (
     <footer style={styles.footer}>
-      <p>Contact us: <a href="mailto:support@healthmonitoring.com">support@healthmonitoring.com</a></p>
+      <p>Contact us: <a href="mailto:nguyenxuankien1205ab4@gmail.com">support@healthmonitoring.com</a></p>
     </footer>
   );
 }

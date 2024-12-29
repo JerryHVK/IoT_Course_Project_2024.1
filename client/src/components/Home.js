@@ -219,10 +219,13 @@ const Home = ({token}) => {
       {chartData && (
         <div style={{ marginTop: '20px' }}>
           <h3>Line Graph</h3>
+          <div style={{ width: '1000px', height: '500px', margin: '0 auto' }}>
           <Line
             data={chartData}
+            
             options={{
               responsive: true,
+              maintainAspectRatio: false,
               plugins: {
                 legend: { position: 'top' },
                 title: {
@@ -246,6 +249,7 @@ const Home = ({token}) => {
               },
             }}
           />
+          </div>
         </div>
       )}
     </div>

@@ -1,7 +1,7 @@
 import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Signup.css";
-
+import signupicon from "../picture/signup.jpg"
 const USER_SIGNUP_API = `${process.env.REACT_APP_SERVER}${process.env.REACT_APP_USER_ROUTE}${process.env.REACT_APP_USER_SIGNUP}`;
 
 function Signup() {
@@ -56,7 +56,7 @@ function Signup() {
   return (
     <div className="signup-container">
       <div className="signup-card">
-        <img src="/web-logo.png" alt="Logo" className="signup-logo" />
+        <img src={signupicon} alt="Logo" className="signup-logo" />
         <h1 className="signup-title">Signup</h1>
         <form className="signup-form" onSubmit={handleSubmit}>
           <label className="signup-label">Name</label>
