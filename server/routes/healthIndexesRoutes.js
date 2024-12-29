@@ -17,12 +17,13 @@ router
   .get(authController.protect, healthIndexesController.getMonthlyAverageByYear);
 
 router
-  .route('/fakedata')
-  .patch(
-    authController.protect,
-    authController.restrictTo('user'),
-    healthIndexesController.createFakeData,
-  );
+.route('/fakedata')
+.patch(
+  authController.protect, //authen
+  authController.restrictTo('user'), //author
+  healthIndexesController.createBetterFakeData, //end-point
+);
+  
 router
   .route('/:number')
   .get(

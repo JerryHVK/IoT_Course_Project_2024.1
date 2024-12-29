@@ -5,7 +5,7 @@ import Signup from "./components/Signup";
 
 import Layout from "./components/Layout";
 
-import Home from "./components/Home";
+import  Home  from './components/Home';
 import MyInfo from "./components/MyInfo";
 import AboutSystem from "./components/AboutSystem";
 import LogoutConfirm from "./components/LogoutConfirm";
