@@ -1,7 +1,6 @@
 const mqtt = require('mqtt');
-// const deviceController = require('./../controllers/deviceController');
-// const Device = require('./../models/deviceModel');
-// const HealthIndexes = require('./../models/HealthIndexes');
+const Device = require('./../models/deviceModel');
+const HealthIndexes = require('../models/healthIndexesModel');
 
 const mqttServer = 'broker.emqx.io:1883';
 const mqttClientId = 'khang-khanh-kien-tam';
@@ -26,15 +25,19 @@ client.on('connect', () => {
   });
 });
 
-// client.on('message', async (topic, message) => {
-//   // convert message to JSON format
-//   try {
-//     const messageJSON = message.toJSON();
-//     const device = await Device.findOne({deviceNumber: messageJSON.deviceNumber});
-//     const data = await HealthIndexes.findOneAndUpdate({user: device.user}, {})
-//   } catch (error) {
-//     console.log("Something's wrong when processing the mqtt message");
-//   }
-// });
+client.on('message', async (topic, message) => {
+  console.log(message);
+  // convert message to JSON format
+  try {
+    //example of message: {"deviceNumber":"DEVICE5086","data":{"heartRate":83}}
+    const messageJSON = JSON.parse(message.toString());
+    const device = await Device.findOne({deviceNumber: messageJSON.deviceNumber});
+    await HealthIndexes.findOneAndUpdate({user: device.user}, {data: {$push : {heartRate: message.data.heartRate} }})
+  } catch (error) {
+    console.log("Something's wrong when processing the mqtt message");
+  }
+});
+
+
 
 module.exports = client;
