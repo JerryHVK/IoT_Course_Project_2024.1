@@ -16,7 +16,7 @@ exports.saveData = async (req, res, next) => {
   }
 };
 
-/*
+
 // get data: day, month, year
 exports.getDataByDuration = catchAsync(async (req, res, next) => {
   const day = req.params.day * 1; // trick to convert string to number
@@ -42,7 +42,6 @@ exports.getDataByDuration = catchAsync(async (req, res, next) => {
 
   }
 });
-*/
 
 exports.getLatestData = catchAsync(async (req, res, next) => {
   const number = req.params.number || 100;

@@ -1,11 +1,13 @@
 const mqtt = require('mqtt');
-const deviceController = require('./../controllers/deviceController');
+// const deviceController = require('./../controllers/deviceController');
+// const Device = require('./../models/deviceModel');
+// const HealthIndexes = require('./../models/HealthIndexes');
 
 const mqttServer = 'broker.emqx.io:1883';
 const mqttClientId = 'khang-khanh-kien-tam';
 const mqttUsername = 'group3-api-server';
 const mqttPassword = 'khangkhanhkientam';
-const mqttSubTopic = '/group3/iot-project/data';
+const mqttSubTopic = 'iotcourse_group3/server';
 
 const client = mqtt.connect(mqttServer, {
   clientId: mqttClientId,
@@ -16,24 +18,23 @@ const client = mqtt.connect(mqttServer, {
 });
 
 client.on('connect', () => {
-  console.log("Connected Mqtt service");
+  console.log('Connected Mqtt service');
   client.subscribe([mqttSubTopic], (error) => {
-    if(error){
+    if (error) {
       console.log(`Mqtt client cannot subscribe the topic: ${mqttSubTopic}`);
     }
   });
 });
 
-client.on('message', (topic, message) => {
-  // convert message to JSON format
-  try {
-    const messageJSON = message.toJSON();
-    messageJSON.data.heartRate  .spo2
-    save
-
-  } catch (error) {
-    console.log("Something's wrong when processing the mqtt message");
-  }
-});
+// client.on('message', async (topic, message) => {
+//   // convert message to JSON format
+//   try {
+//     const messageJSON = message.toJSON();
+//     const device = await Device.findOne({deviceNumber: messageJSON.deviceNumber});
+//     const data = await HealthIndexes.findOneAndUpdate({user: device.user}, {})
+//   } catch (error) {
+//     console.log("Something's wrong when processing the mqtt message");
+//   }
+// });
 
 module.exports = client;
